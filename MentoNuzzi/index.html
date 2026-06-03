@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Mentoria - Ecim Maestro Andrea Nuzzi</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Cores de Identidade da Escola Cívico-Militar */
+        :root {
+            --cor-primaria: #1b365d;
+            /* Azul Marinho */
+            --cor-secundaria: #d4af37;
+            /* Dourado/Amarelo Militar */
+        }
+
+        .bg-militar-azul {
+            background-color: var(--cor-primaria);
+        }
+
+        .text-militar-azul {
+            color: var(--cor-primaria);
+        }
+
+        .border-militar-ouro {
+            border-color: var(--cor-secundaria);
+        }
+
+        .bg-militar-ouro {
+            background-color: var(--cor-secundaria);
+        }
+
+        /* Estilo do Certificado para Impressão */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #area-impressao-certificado,
+            #area-impressao-certificado * {
+                visibility: visible;
+            }
+
+            #area-impressao-certificado {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans flex flex-col min-h-screen">
+
+    <header class="bg-militar-azul text-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div
+                    class="bg-white p-2 rounded-full w-12 h-12 flex items-center justify-center text-militar-azul font-bold border-2 border-militar-ouro">
+                    <i class="fa-solid fa-shield-halved text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-wide">ECIM MAESTRO ANDREA NUZZI</h1>
+                    <p class="text-xs text-gray-300 tracking-widest uppercase">Escola Cívico-Militar - Cambé / PR</p>
+                </div>
+            </div>
+            <nav class="flex gap-2">
+                <button onclick="mudarAba('agendamento')" id="btn-agendamento"
+                    class="aba-btn px-4 py-2 rounded font-medium transition bg-white/20 text-white">
+                    <i class="fa-regular fa-calendar-days mr-2"></i>Agendamento
+                </button>
+                <button onclick="mudarAba('avaliacoes')" id="btn-avaliacoes"
+                    class="aba-btn px-4 py-2 rounded font-medium transition text-gray-300 hover:bg-white/10">
+                    <i class="fa-regular fa-star mr-2"></i>Avaliações
+                </button>
+                <button onclick="mudarAba('certificados')" id="btn-certificados"
+                    class="aba-btn px-4 py-2 rounded font-medium transition text-gray-300 hover:bg-white/10">
+                    <i class="fa-solid fa-award mr-2"></i>Certificados
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 flex-grow">
+
+        <section id="secao-agendamento" class="aba-conteudo block">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h2 class="text-xl font-bold text-militar-azul mb-4 border-b pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus text-sm text-militar-ouro"></i> Solicitar Nova Mentoria
+                    </h2>
+                    <form id="form-agendamento" onsubmit="salvarAgendamento(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Nome do Aluno
+                                (Mentorado)</label>
+                            <input type="text" id="agenda-aluno" required
+                                class="w-full px-3 py-2 border rounded focus:outline-none focus:border-militar-azul">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Série / Turma</label>
+                            <select id="agenda-turma" required
+                                class="w-full px-3 py-2 border rounded focus:outline-none focus:border-militar-azul">
+                                <option value="6º Ano - EF">6º Ano - Ensino Fundamental</option>
+                                <option value="7º Ano - EF">7º Ano - Ensino Fundamental</option>
+                                <option value="8º Ano - EF">8º Ano - Ensino Fundamental</option>
+                                <option value="9º Ano - EF">9º Ano - Ensino Fundamental</option>
+                                <option value="1º Ano - EM">1º Ano - Ensino Médio</option>
+                                <option value="2º Ano - EM">2º Ano - Ensino Médio</option>
+                                <option value="3º Ano - EM">3º Ano - Ensino Médio</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Matéria Necessária</label>
+                            <select id="agenda-materia" required
+                                class="w-full px-3 py-2 border rounded focus:outline-none focus:border-militar-azul">
+                                <option value="Matemática">Matemática</option>
+                                <option value="Língua Portuguesa">Língua Portuguesa</option>
+                                <option value="História">História</option>
+                                <option value="Geografia">Geografia</option>
+                                <option value="Ciências / Física / Química">Ciências / Física / Química</option>
+                                <option value="Inglês">Inglês</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Mentor Alocado</label>
+                            <select id="agenda-mentor" required
+                                class="w-full px-3 py-2 border rounded focus:outline-none focus:border-militar-azul">
+                                <option value="Monitor Aluno Silva (3º EM)">Monitor Aluno Silva (3º EM)</option>
+                                <option value="Monitora Aluna Santos (2º EM)">Monitora Aluna Santos (2º EM)</option>
+                                <option value="Monitor Aluno Costa (3º EM)">Monitor Aluno Costa (3º EM)</option>
+                                <option value="Monitora Aluna Oliveira (1º EM)">Monitora Aluna Oliveira (1º EM)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Data</label>
+                                <input type="date" id="agenda-data" required
+                                    class="w-full px-3 py-2 border rounded focus:outline-none focus:border-militar-azul">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Horário
+                                    (Contraturno)</label>
+                                <input type="time" id="agenda-hora" required
+                                    class="w-full px-3 py-2 border rounded focus:outline-none focus:border-militar-azul">
+                            </div>
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-militar-azul hover:bg-slate-800 text-white font-bold py-2 px-4 rounded transition shadow">
+                            Confirmar Missão de Mentoria
+                        </button>
+                    </form>
+                </div>
+
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h2
+                        class="text-xl font-bold text-militar-azul mb-4 border-b pb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-list-check text-sm text-militar-ouro"></i> Mentorias
+                            Agendadas</span>
+                        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Quadro de Avisos</span>
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
+                                    <th class="p-3 border-b">Aluno / Turma</th>
+                                    <th class="p-3 border-b">Matéria</th>
+                                    <th class="p-3 border-b">Mentor</th>
+                                    <th class="p-3 border-b">Data / Hora</th>
+                                    <th class="p-3 border-b text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-mentorias" class="text-sm divide-y divide-gray-100">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="secao-avaliacoes" class="aba-conteudo hidden">
+            <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-xl font-bold text-militar-azul mb-2 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-star-half-stroke text-militar-ouro"></i> Avaliação de Desempenho da Mentoria
+                </h2>
+                <p class="text-sm text-gray-600 mb-6">Camarada, sua opinião ajuda a manter a excelência das nossas
+                    monitorias. Avalie o atendimento recebido de forma justa e franca.</p>
+
+                <form id="form-avaliacao" onsubmit="salvarAvaliacion(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Quem foi seu Mentor?</label>
+                            <select id="aval-mentor" required
+                                class="w-full px-3 py-2 border rounded focus:outline-none">
+                                <option value="Monitor Aluno Silva (3º EM)">Monitor Aluno Silva (3º EM)</option>
+                                <option value="Monitora Aluna Santos (2º EM)">Monitora Aluna Santos (2º EM)</option>
+                                <option value="Monitor Aluno Costa (3º EM)">Monitor Aluno Costa (3º EM)</option>
+                                <option value="Monitora Aluna Oliveira (1º EM)">Monitora Aluna Oliveira (1º EM)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Nota de Desempenho (1 a 5
+                                estrelas)</label>
+                            <select id="aval-nota"
+                                class="w-full px-3 py-2 border border-militar-ouro bg-yellow-50 text-yellow-700 font-bold rounded focus:outline-none">
+                                <option value="5">★★★★★ - Excelente Domínio e Didática</option>
+                                <option value="4">★★★★☆ - Muito Bom</option>
+                                <option value="3">★★★☆☆ - Regular / Atendeu as dúvidas</option>
+                                <option value="2">★★☆☆☆ - Precisa de melhor preparação</option>
+                                <option value="1">★☆☆☆☆ - Insatisfatório</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Comentários e Feedbacks</label>
+                        <textarea id="aval-comentario" rows="3"
+                            placeholder="Ex: O monitor explicou muito bem as fórmulas de física e foi paciente..."
+                            required class="w-full px-3 py-2 border rounded focus:outline-none"></textarea>
+                    </div>
+                    <button type="submit"
+                        class="bg-militar-azul hover:bg-slate-800 text-white font-bold py-2 px-6 rounded transition shadow">
+                        Enviar Avaliação
+                    </button>
+                </form>
+
+                <div class="mt-8">
+                    <h3 class="text-md font-bold text-gray-700 uppercase tracking-wider mb-4">Últimos Feedbacks
+                        Registrados</h3>
+                    <div id="mural-avaliacoes" class="space-y-3">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="secao-certificados" class="aba-conteudo hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-fit">
+                    <h2 class="text-xl font-bold text-militar-azul mb-4 border-b pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-print text-militar-ouro"></i> Emissão de Certificado
+                    </h2>
+                    <form id="form-certificado" onsubmit="gerarCertificado(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Nome Completo do Aluno</label>
+                            <input type="text" id="cert-nome" placeholder="Ex: Gabriel Henrique de Souza" required
+                                class="w-full px-3 py-2 border rounded focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Papel na Mentoria</label>
+                            <select id="cert-papel" class="w-full px-3 py-2 border rounded focus:outline-none">
+                                <option value="como MENTOR, demonstrando espírito de liderança, dedicação e cooperação">
+                                    Mentor (Quem ensinou)</option>
+                                <option
+                                    value="como MENTORADO, buscando com afinco e disciplina o aprimoramento estudantil">
+                                    Mentorado (Quem aprendeu)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Componente Curricular
+                                (Matéria)</label>
+                            <input type="text" id="cert-materia" placeholder="Ex: Matemática e Álgebra Básica" required
+                                class="w-full px-3 py-2 border rounded focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Carga Horária
+                                Acumulada</label>
+                            <input type="number" id="cert-horas" placeholder="Ex: 12" required
+                                class="w-full px-3 py-2 border rounded focus:outline-none">
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2 px-4 rounded transition shadow flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Renderizar Certificado Oficial
+                        </button>
+                    </form>
+                </div>
+
+                <div class="lg:col-span-2 flex flex-col items-center">
+                    <div id="area-impressao-certificado"
+                        class="w-full max-w-2xl bg-white p-8 border-8 border-double border-militar-azul rounded-lg shadow-lg relative bg-[radial-gradient(#f3f4f6_1px,transparent_1px)] [background-size:16px_16px] text-center hidden">
+                        <div class="text-militar-azul text-4xl mb-2">
+                            <i class="fa-solid fa-gavel"></i>
+                        </div>
+                        <h2 class="text-xs uppercase tracking-widest font-serif font-bold text-gray-600">Estado do
+                            Paraná</h2>
+                        <h1 class="text-xl font-serif font-bold text-militar-azul uppercase">Escola Cívico-Militar
+                            Maestro Andrea Nuzzi</h1>
+                        <p class="text-[10px] text-gray-500 italic mb-6">Criada sob os preceitos de Disciplina, Honra e
+                            Saber - Cambé / PR</p>
+
+                        <div class="my-6">
+                            <h3 class="text-3xl font-serif italic text-militar-ouro my-4 font-bold">Certificado de
+                                Participação</h3>
+                            <p class="text-gray-700 leading-relaxed text-sm max-w-xl mx-auto px-4">
+                                Certificamos para os devidos fins de registro escolar e enriquecimento curricular que o
+                                aluno(a)
+                                <strong id="print-nome" class="text-base text-black underline block my-2">NOME DO
+                                    ALUNO</strong>
+                                participou ativamente do projeto de Monitoria e Mentoria Escolar, atuando <span
+                                    id="print-papel">...</span> na matéria de <strong id="print-materia">...</strong>,
+                                computando uma carga horária total de <span id="print-horas" class="font-bold">0</span>
+                                horas letivas no presente ano.
+                            </p>
+                        </div>
+
+                        <div
+                            class="grid grid-cols-2 gap-8 mt-12 text-[11px] text-gray-600 max-w-md mx-auto pt-6 border-t border-gray-100">
+                            <div>
+                                <div class="border-b border-gray-400 w-full h-5"></div>
+                                <p class="mt-1 font-bold">Direção Geral Cívico-Militar</p>
+                                <p class="text-[9px]">ECIM Maestro Andrea Nuzzi</p>
+                            </div>
+                            <div>
+                                <div class="border-b border-gray-400 w-full h-5"></div>
+                                <p class="mt-1 font-bold">Coordenação Pedagógica</p>
+                                <p class="text-[9px]">Registro Interno de Monitoria</p>
+                            </div>
+                        </div>
+
+                        <p class="text-[9px] text-gray-400 mt-6 text-right" id="print-data-atual"></p>
+                    </div>
+
+                    <button id="btn-imprimir" onclick="window.print()"
+                        class="mt-4 bg-gray-800 text-white px-6 py-2 rounded shadow hover:bg-gray-900 transition flex items-center gap-2 hidden">
+                        <i class="fa-solid fa-print"></i> Imprimir ou Salvar em PDF
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-gray-400 text-center py-4 text-xs border-t-2 border-militar-ouro">
+        <p>&copy; 2026 ECIM Maestro Andrea Nuzzi. Sistema Interno de Mentoria Cooperativa.</p>
+        <p class="text-[10px] text-gray-600 mt-1">Desenvolvido para incentivo ao protagonismo estudantil e camaradagem.
+        </p>
+    </footer>
+
+    <script>
+        // Banco de Dados fictício carregado localmente para simular funcionamento real
+        let mentorias = [
+            { aluno: "Lucas Gabriel", turma: "8º Ano - EF", materia: "Matemática", mentor: "Monitor Aluno Silva (3º EM)", data: "2026-06-10", hora: "14:00", status: "Agendado" },
+            { aluno: "Mariana Costa", turma: "1º Ano - EM", materia: "Ciências / Física / Química", mentor: "Monitora Aluna Santos (2º EM)", data: "2026-06-02", hora: "15:30", status: "Concluído" }
+        ];
+
+        let avaliacoes = [
+            { mentor: "Monitor Aluno Silva (3º EM)", nota: "5", comentario: "Muito bom! Salvou minha nota na prova de frações." },
+            { mentor: "Monitora Aluna Santos (2º EM)", nota: "4", comentario: "Explicou muito bem a matéria de química orgânica." }
+        ];
+
+        // Controle de Abas do Sistema (SPA)
+        function mudarAba(abaNome) {
+            document.querySelectorAll('.aba-conteudo').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.aba-conteudo').forEach(el => el.classList.remove('block'));
+
+            document.querySelectorAll('.aba-btn').forEach(btn => {
+                btn.classList.remove('bg-white/20', 'text-white');
+                btn.classList.add('text-gray-300', 'hover:bg-white/10');
+            });
+
+            if (abaNome === 'agendamento') {
+                document.getElementById('secao-agendamento').classList.remove('hidden');
+                document.getElementById('btn-agendamento').classList.add('bg-white/20', 'text-white');
+            } else if (abaNome === 'avaliacoes') {
+                document.getElementById('secao-avaliacoes').classList.remove('hidden');
+                document.getElementById('btn-avaliacoes').classList.add('bg-white/20', 'text-white');
+            } else if (abaNome === 'certificados') {
+                document.getElementById('secao-certificados').classList.remove('hidden');
+                document.getElementById('btn-certificados').classList.add('bg-white/20', 'text-white');
+            }
+        }
+
+        // Renderizar a Tabela de Agendamentos
+        function renderizarTabela() {
+            const tabela = document.getElementById('tabela-mentorias');
+            tabela.innerHTML = '';
+
+            mentorias.forEach(m => {
+                const badgeStatus = m.status === 'Agendado'
+                    ? `<span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded-full font-medium"><i class="fa-regular fa-clock mr-1"></i>Agendado</span>`
+                    : `<span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-medium"><i class="fa-solid fa-check mr-1"></i>Concluído</span>`;
+
+                const dataFormatada = m.data.split('-').reverse().join('/');
+
+                tabela.innerHTML += `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-3 font-semibold text-gray-800">${m.aluno}<br><span class="text-xs text-gray-500 font-normal">${m.turma}</span></td>
+                        <td class="p-3 text-gray-600 font-medium">${m.materia}</td>
+                        <td class="p-3 text-gray-600">${m.mentor}</td>
+                        <td class="p-3 text-gray-700">${dataFormatada} às ${m.hora}h</td>
+                        <td class="p-3 text-center">${badgeStatus}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Renderizar o mural de Avaliações
+        function renderizarAvaliacoes() {
+            const mural = document.getElementById('mural-avaliacoes');
+            mural.innerHTML = '';
+
+            avaliacoes.forEach(a => {
+                let estrelas = "★".repeat(Number(a.nota)) + "☆".repeat(5 - Number(a.nota));
+                mural.innerHTML += `
+                    <div class="p-4 bg-gray-50 rounded-lg border-l-4 border-militar-ouro">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs font-bold text-militar-azul uppercase">${a.mentor}</span>
+                            <span class="text-yellow-600 font-serif text-sm">${estrelas}</span>
+                        </div>
+                        <p class="text-gray-600 text-xs italic">"${a.comentario}"</p>
+                    </div>
+                `;
+            });
+        }
+
+        // Ação de Salvar um Novo Agendamento
+        function salvarAgendamento(e) {
+            e.preventDefault();
+            const novoAgendamento = {
+                aluno: document.getElementById('agenda-aluno').value,
+                turma: document.getElementById('agenda-turma').value,
+                materia: document.getElementById('agenda-materia').value,
+                mentor: document.getElementById('agenda-mentor').value,
+                data: document.getElementById('agenda-data').value,
+                hora: document.getElementById('agenda-hora').value,
+                status: "Agendado"
+            };
+
+            mentorias.unshift(novoAgendamento); // Adiciona no início da lista
+            renderizarTabela();
+            document.getElementById('form-agendamento').reset();
+            alert("Missão dada é missão cumprida! Mentoria agendada com sucesso.");
+        }
+
+        // Ação de Enviar uma Nova Avaliação
+        function salvarAvaliacion(e) {
+            e.preventDefault();
+            const novaAval = {
+                mentor: document.getElementById('aval-mentor').value,
+                nota: document.getElementById('aval-nota').value,
+                comentario: document.getElementById('aval-comentario').value
+            };
+
+            avaliacoes.unshift(novaAval);
+            renderizarAvaliacoes();
+            document.getElementById('form-avaliacao').reset();
+            alert("Obrigado pelo seu feedback voluntário!");
+        }
+
+        // Ação de Gerar e Exibir o Certificado
+        function gerarCertificado(e) {
+            e.preventDefault();
+
+            document.getElementById('print-nome').innerText = document.getElementById('cert-nome').value.toUpperCase();
+            document.getElementById('print-papel').innerHTML = document.getElementById('cert-papel').value;
+            document.getElementById('print-materia').innerText = document.getElementById('cert-materia').value;
+            document.getElementById('print-horas').innerText = document.getElementById('cert-horas').value;
+
+            // Coloca a data atual formatada
+            const hoje = new Date();
+            document.getElementById('print-data-atual').innerText = `Cambé - PR, em ${hoje.toLocaleDateString('pt-BR')}.`;
+
+            // Exibe a área do certificado e o botão de imprimir
+            document.getElementById('area-impressao-certificado').classList.remove('hidden');
+            document.getElementById('btn-imprimir').classList.remove('hidden');
+
+            // Rola a tela até o certificado recém-gerado
+            document.getElementById('area-
